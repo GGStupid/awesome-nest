@@ -1,8 +1,9 @@
+import { IsEmail, IsString } from 'class-validator';
+
 export class CreateUserDto {
-  constructor(userName: string, password: string) {
-    this.userName = userName;
-    this.password = password;
-  }
+  @IsEmail()
   userName: string;
+
+  @IsString()
   password: string;
 }

@@ -4,7 +4,7 @@ import { join } from 'path';
 
 require('dotenv').config({ path: 'scripts/.env' });
 
-// @Injectable()
+@Injectable()
 export class ConfigService {
   constructor(private env: { [k: string]: string | undefined }) {}
 
@@ -38,11 +38,13 @@ export class ConfigService {
 
       entities: [join(__dirname, '../**', '*.entity.{ts,js}')],
 
-      migrationsTableName: 'migration',
-      migrations: ['src/migration/*.ts'],
-      cli: {
-        migrationsDir: 'src/migration',
-      },
+      // migrationsTableName: 'migration',
+      // migrations: ['src/migration/*.ts'],
+      // cli: {
+      //   migrationsDir: 'src/migration',
+      // },
+
+      synchronize: this.isProduction() ? false : true,
 
       ssl: this.isProduction(),
     };

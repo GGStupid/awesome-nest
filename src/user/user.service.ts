@@ -12,8 +12,18 @@ export class UserService {
   ) {}
 
   create(createUserDto: CreateUserDto) {
-    // let user = new createUserDto();
-    // return this.repo.save();
+    let user = new User();
+    user.userName = createUserDto.userName;
+    user.password = createUserDto.password;
+    // user.createDateTime = new Date();
+    // user.createdBy = createUserDto.userName;
+    // user.lastChangedBy = createUserDto.userName;
+    // user.lastChangedDateTime = new Date();
+    return this.repo.save(user);
+  }
+
+  login(createUserDto: CreateUserDto) {
+    return;
   }
 
   findAll() {
@@ -21,7 +31,7 @@ export class UserService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} user`;
+    return this.repo.findOne(id);
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
