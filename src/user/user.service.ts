@@ -23,6 +23,8 @@ export class UserService {
   }
 
   login(createUserDto: CreateUserDto) {
+    const isExist = this.repo.findOne({ userName: createUserDto.userName });
+    console.log(isExist);
     return;
   }
 
