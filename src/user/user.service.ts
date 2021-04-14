@@ -15,6 +15,7 @@ export class UserService {
     let user = new User();
     user.userName = createUserDto.userName;
     user.password = createUserDto.password;
+    user.email = createUserDto.email;
     // user.createDateTime = new Date();
     // user.createdBy = createUserDto.userName;
     // user.lastChangedBy = createUserDto.userName;
@@ -22,10 +23,13 @@ export class UserService {
     return this.repo.save(user);
   }
 
-  login(createUserDto: CreateUserDto) {
-    const isExist = this.repo.findOne({ userName: createUserDto.userName });
+  async login(updateUserDto: UpdateUserDto) {
+    const isExist = await this.repo.findOne({
+      userName: updateUserDto.userName,
+      password: updateUserDto.password,
+    });
     console.log(isExist);
-    return;
+    if (isExist) return isExist;
   }
 
   findAll() {
@@ -34,6 +38,10 @@ export class UserService {
 
   findOne(id: number) {
     return this.repo.findOne(id);
+  }
+
+  findOneByUserName(userName: string) {
+    return this.repo.findOne({ userName: userName });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
