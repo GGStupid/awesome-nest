@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -11,23 +11,29 @@ export class UserService {
     @InjectRepository(User) private readonly repo: Repository<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) {
+    const isExist = await this.repo.findOne({
+      userName: createUserDto.userName,
+    });
+    console.log(isExist);
+    if (isExist) {
+      throw new HttpException('用户名已注册', HttpStatus.NOT_ACCEPTABLE);
+    }
+
     let user = new User();
     user.userName = createUserDto.userName;
     user.password = createUserDto.password;
     user.email = createUserDto.email;
-    // user.createDateTime = new Date();
-    // user.createdBy = createUserDto.userName;
-    // user.lastChangedBy = createUserDto.userName;
-    // user.lastChangedDateTime = new Date();
     return this.repo.save(user);
   }
 
   async login(updateUserDto: UpdateUserDto) {
     const isExist = await this.repo.findOne({
       userName: updateUserDto.userName,
-      password: updateUserDto.password,
     });
+    if (isExist) {
+      throw new HttpException('用户名已注册', HttpStatus.NOT_ACCEPTABLE);
+    }
     console.log(isExist);
     if (isExist) return isExist;
   }
