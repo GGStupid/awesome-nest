@@ -11,19 +11,8 @@ export class UserService {
     @InjectRepository(User) private readonly repo: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto) {
-    const isExist = await this.repo.findOne({
-      userName: createUserDto.userName,
-    });
-    console.log(isExist);
-    if (isExist) {
-      throw new HttpException('用户名已注册', HttpStatus.NOT_ACCEPTABLE);
-    }
-
-    let user = new User();
-    user.userName = createUserDto.userName;
-    user.password = createUserDto.password;
-    user.email = createUserDto.email;
+  async register(createUserDto: CreateUserDto) {
+    const user = await this.repo.create(createUserDto);
     return this.repo.save(user);
   }
 
@@ -31,11 +20,13 @@ export class UserService {
     const isExist = await this.repo.findOne({
       userName: updateUserDto.userName,
     });
-    if (isExist) {
-      throw new HttpException('用户名已注册', HttpStatus.NOT_ACCEPTABLE);
+    if (!isExist) {
+      throw new HttpException('用户名未注册', HttpStatus.NOT_FOUND);
     }
-    console.log(isExist);
-    if (isExist) return isExist;
+    if (isExist.password !== updateUserDto.password) {
+      throw new HttpException('密码错误，请重试', HttpStatus.FORBIDDEN);
+    }
+    return isExist;
   }
 
   findAll() {
@@ -48,6 +39,10 @@ export class UserService {
 
   findOneByUserName(userName: string) {
     return this.repo.findOne({ userName: userName });
+  }
+
+  getByEmail(email: string) {
+    return this.repo.findOne({email})
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
