@@ -2,10 +2,17 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
 import { compare, hash } from 'bcrypt';
+import { PostgresErrorCode } from 'src/database/postgresErrorCodes.enum';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async register(registerUser: CreateUserDto) {
     const hashedPassword = await hash(registerUser.password, 10);
@@ -27,11 +34,19 @@ export class AuthService {
     }
   }
 
-  async getAuthenticateUser(email: string, password: string) {
+  getCookieWithJwtToken(userId: number) {
+    const payload = userId + '';
+    const token = this.jwtService.sign(payload);
+    return `Authentication=${token};HttpOnly;Path=/;Max-Age=${this.configService.get(
+      'JWT_EXPIRATION_TIME',
+    )}`;
+  }
+
+  async getAuthenticateUser(username: string, password: string) {
     try {
-      const user = await this.userService.getByEmail(email);
+      const user = await this.userService.findOneByUserName(username);
       await this.verifyPassword(password, user.password);
-      user.password = undefined;
+      delete user.password;
       return user;
     } catch (error) {
       throw new HttpException('密码错误', HttpStatus.BAD_REQUEST);
@@ -47,5 +62,4 @@ export class AuthService {
       throw new HttpException('密码错误', HttpStatus.BAD_REQUEST);
     }
   }
-  
 }

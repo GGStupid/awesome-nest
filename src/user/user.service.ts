@@ -11,6 +11,14 @@ export class UserService {
     @InjectRepository(User) private readonly repo: Repository<User>,
   ) {}
 
+  async getById(id: number) {
+    const user = await this.repo.findOne({ id });
+    if (user) {
+      return user;
+    }
+    throw new HttpException('用户不存在', HttpStatus.NOT_FOUND);
+  }
+
   async register(createUserDto: CreateUserDto) {
     const user = await this.repo.create(createUserDto);
     return this.repo.save(user);
@@ -42,7 +50,7 @@ export class UserService {
   }
 
   getByEmail(email: string) {
-    return this.repo.findOne({email})
+    return this.repo.findOne({ email });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
