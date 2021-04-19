@@ -21,7 +21,6 @@ export class AuthService {
         ...registerUser,
         password: hashedPassword,
       });
-      createUser.password = undefined;
       return createUser;
     } catch (error) {
       if (error.code === PostgresErrorCode.UniqueViolation) {
@@ -35,18 +34,21 @@ export class AuthService {
   }
 
   getCookieWithJwtToken(userId: number) {
-    const payload = userId + '';
+    const payload = { userId };
     const token = this.jwtService.sign(payload);
     return `Authentication=${token};HttpOnly;Path=/;Max-Age=${this.configService.get(
       'JWT_EXPIRATION_TIME',
     )}`;
   }
 
+  getCookieForLogOut() {
+    return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
+  }
+
   async getAuthenticateUser(username: string, password: string) {
     try {
       const user = await this.userService.findOneByUserName(username);
       await this.verifyPassword(password, user.password);
-      delete user.password;
       return user;
     } catch (error) {
       throw new HttpException('密码错误', HttpStatus.BAD_REQUEST);
