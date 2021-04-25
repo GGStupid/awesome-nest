@@ -19,7 +19,7 @@ import RequestWithUser from './requestWithUser.interface';
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('register')
   async register(@Body() resterData: CreateUserDto) {

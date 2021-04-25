@@ -1,6 +1,15 @@
 // import { BaseEntity } from '../../model/base.entity';
 import { Exclude, Expose } from 'class-transformer';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import Address from './address.entity';
+import Post from './post.entity';
 
 @Entity()
 export class User {
@@ -16,4 +25,11 @@ export class User {
 
   @Column({ unique: true })
   email: string;
+
+  @OneToOne(() => Address)
+  @JoinColumn()
+  address: Address;
+
+  @OneToMany(() => Post, (post: Post) => post.author)
+  public posts: Post[];
 }
