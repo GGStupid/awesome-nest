@@ -5,6 +5,10 @@ import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserService } from 'src/user/user.service';
 
+interface IPayload {
+  userId: number;
+}
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -21,7 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(userId: string) {
-    return this.userService.getById(+userId);
+  async validate(payload: IPayload) {
+    return this.userService.getById(payload.userId);
   }
 }

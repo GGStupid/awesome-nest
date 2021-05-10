@@ -2,6 +2,7 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Get,
   Post,
   Req,
   Res,
@@ -35,11 +36,18 @@ export class AuthController {
     return user;
   }
 
+  @Get('info')
+  @UseGuards(JwtAuthenticationGuard)
+  async userInfo(@Req() request: RequestWithUser) {
+    const { user } = request;
+    return user;
+  }
+
   @Post('logout')
   @UseGuards(JwtAuthenticationGuard)
-  async logout(@Req() request: RequestWithUser, @Res() response: Response) {
+  async logout(@Req() request: RequestWithUser) {
     const cookie = this.authService.getCookieForLogOut();
-    response.setHeader('Set-Cookie', cookie);
-    return response.sendStatus(200);
+    request.res.setHeader('Set-Cookie', cookie);
+    return null;
   }
 }
