@@ -21,7 +21,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     let status, errMsg;
     if (typeof errorResponse === 'string') {
       status = exception.getStatus();
-      status = exception.message;
+      errMsg = exception.message;
     } else {
       status = (errorResponse as ErrorResponse).statusCode;
       errMsg = (errorResponse as ErrorResponse).message;

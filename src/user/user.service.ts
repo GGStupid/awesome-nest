@@ -4,12 +4,20 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { compare, hash } from 'bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly repo: Repository<User>,
   ) {}
+
+  async setCurrentRefreshToken(refreshToken: string, userId: number) {
+    const currentHashedRefreshToken = await hash(refreshToken, 10);
+    await this.repo.update(userId, { currentHashedRefreshToken });
+  }
+
+  
 
   async getById(id: number) {
     const user = await this.repo.findOne({ id });
