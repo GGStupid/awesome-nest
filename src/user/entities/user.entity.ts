@@ -2,14 +2,14 @@
 import { Exclude, Expose } from 'class-transformer';
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import Address from './address.entity';
-import Post from './post.entity';
 
 @Entity()
 export class User {
@@ -23,16 +23,18 @@ export class User {
   @Exclude()
   password: string;
 
-  @Column({ nullable: true })
-  public currentHashedRefreshToken?: string;
-
   @Column({ unique: true })
   email: string;
 
-  @OneToOne(() => Address)
-  @JoinColumn()
-  address: Address;
+  @Column({ nullable: true })
+  @Exclude()
+  public currentHashedRefreshToken?: string;
 
-  @OneToMany(() => Post, (post: Post) => post.author)
-  public posts: Post[];
+  @CreateDateColumn()
+  @Exclude()
+  createTime: Date;
+
+  @UpdateDateColumn()
+  @Exclude()
+  updateTime: Date;
 }

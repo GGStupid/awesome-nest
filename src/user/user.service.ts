@@ -17,7 +17,20 @@ export class UserService {
     await this.repo.update(userId, { currentHashedRefreshToken });
   }
 
-  
+  async getUserIdRefreshTokenMatchs(refreshToken: string, userId: number) {
+    const user = await this.getById(userId);
+    const isRefreshTokenMatching = await compare(
+      refreshToken,
+      user.currentHashedRefreshToken,
+    );
+    if (isRefreshTokenMatching) {
+      return user;
+    }
+  }
+
+  async removeRefreshToken(userId: number) {
+    return this.repo.update(userId, { currentHashedRefreshToken: null });
+  }
 
   async getById(id: number) {
     const user = await this.repo.findOne({ id });

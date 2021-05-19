@@ -27,7 +27,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       errMsg = (errorResponse as ErrorResponse).message;
     }
 
-    response.json({
+    response.status(status).json({
       code: status,
       message: errMsg,
       timestamp: new Date().getTime(),

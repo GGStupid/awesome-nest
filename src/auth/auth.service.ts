@@ -62,17 +62,19 @@ export class AuthService {
   }
 
   getCookieForLogOut() {
-    return `Authentication=; HttpOnly; Path=/; Max-Age=0`;
+    return [
+      `Authentication=; HttpOnly; Path=/; Max-Age=0`,
+      `Refresh=; HttpOnly; Path=/; Max-Age=0`,
+    ];
   }
 
   async getAuthenticateUser(username: string, password: string) {
-    try {
-      const user = await this.userService.findOneByUserName(username);
-      await this.verifyPassword(password, user.password);
-      return user;
-    } catch (error) {
-      throw new HttpException('密码错误', HttpStatus.BAD_REQUEST);
+    const user = await this.userService.findOneByUserName(username);
+    if (!user) {
+      throw new HttpException('用户未注册或用户名错误', HttpStatus.BAD_REQUEST);
     }
+    await this.verifyPassword(password, user.password);
+    return user;
   }
 
   private async verifyPassword(
@@ -81,7 +83,7 @@ export class AuthService {
   ) {
     const isPasswordMatching = await compare(plainTextPassword, hashedPassword);
     if (!isPasswordMatching) {
-      throw new HttpException('密码错误', HttpStatus.BAD_REQUEST);
+      throw new HttpException('账号或密码错误', HttpStatus.BAD_REQUEST);
     }
   }
 }

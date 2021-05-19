@@ -14,7 +14,8 @@ import { request, response, Response } from 'express';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { UserService } from 'src/user/user.service';
 import { AuthService } from './auth.service';
-import JwtAuthenticationGuard from './guards/jwt-auth.guard';
+import JwtAuthGuard from './guards/jwt-auth.guard';
+import JwtRefreshGuard from './guards/jwt-refresh.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import RequestWithUser from './requestWithUser.interface';
 
@@ -48,17 +49,28 @@ export class AuthController {
     return user;
   }
 
+  @Get('/refresh')
+  @UseGuards(JwtRefreshGuard)
+  async refresh(@Req() request: RequestWithUser) {
+    const accessTokenCookie = this.authService.getCookieWithJwtToken(
+      request.user.id,
+    );
+    request.res.setHeader('Set-Cookie', accessTokenCookie);
+    return request.user;
+  }
+
   @Get('info')
-  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(JwtAuthGuard)
   async userInfo(@Req() request: RequestWithUser) {
     const { user } = request;
     return user;
   }
 
   @Post('logout')
-  @UseGuards(JwtAuthenticationGuard)
+  @UseGuards(JwtAuthGuard)
   async logout(@Req() request: RequestWithUser) {
     const cookie = this.authService.getCookieForLogOut();
+    this.userService.removeRefreshToken(request.user.id);
     request.res.setHeader('Set-Cookie', cookie);
     return null;
   }

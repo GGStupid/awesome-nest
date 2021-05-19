@@ -3,7 +3,6 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as helmet from 'helmet';
 import { TransformInterceptor } from './common/interceptor/transform.interceptor';
-import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
