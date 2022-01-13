@@ -9,9 +9,4 @@ services:
       - ./postgres:/data/postgres
     env_file:
       - docker.env
-    networks:
-      - postgres
-
-networks:
-  postgres:
-    driver: bridge
+    restart: always

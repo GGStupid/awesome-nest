@@ -25,11 +25,6 @@ export class UserController {
     return this.userService.login(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
-  }
-
   @Get(':id')
   findOne(@Param('id') id: string) {
     console.log(id, typeof id);
