@@ -9,12 +9,9 @@ services:
       - ./postgres:/data/postgres
     env_file:
       - docker.env
-    networks:
-      - postgres
+    restart: always
 
   pgadmin:
-    links:
-      - postgres:postgres
     container_name: pgadmin
     image: dpage/pgadmin4
     ports:
@@ -23,9 +20,8 @@ services:
       - ./pgadmin:/root/.pgadmin
     env_file:
       - docker.env
-    networks:
+    restart: always
+    depends_on:
       - postgres
-
-networks:
-  postgres:
-    driver: bridge
+    links:
+      - postgres:postgres
