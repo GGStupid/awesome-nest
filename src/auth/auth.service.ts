@@ -21,7 +21,6 @@ export class AuthService {
         ...registerUser,
         password: hashedPassword,
       });
-      createUser.password = undefined;
       return createUser;
     } catch (error) {
       if (error.code === PostgresErrorCode.UniqueViolation) {
@@ -35,22 +34,47 @@ export class AuthService {
   }
 
   getCookieWithJwtToken(userId: number) {
-    const payload = userId + '';
-    const token = this.jwtService.sign(payload);
+    const payload = { userId };
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get('JWT_TOKEN_EXPIRATION_SECRET')}s`,
+    });
     return `Authentication=${token};HttpOnly;Path=/;Max-Age=${this.configService.get(
-      'JWT_EXPIRATION_TIME',
+      'JWT_TOKEN_EXPIRATION_SECRET',
     )}`;
   }
 
+  getCookieWithJwtRefreshToken(userId: number) {
+    const payload = { userId };
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: `${this.configService.get(
+        'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+      )}s`,
+    });
+    const cookie = `Refresh=${token};HttpOnly;Path=/;Max-Age=${this.configService.get(
+      'JWT_REFRESH_TOKEN_EXPIRATION_TIME',
+    )}`;
+    return {
+      cookie,
+      token,
+    };
+  }
+
+  getCookieForLogOut() {
+    return [
+      `Authentication=; HttpOnly; Path=/; Max-Age=0`,
+      `Refresh=; HttpOnly; Path=/; Max-Age=0`,
+    ];
+  }
+
   async getAuthenticateUser(username: string, password: string) {
-    try {
-      const user = await this.userService.findOneByUserName(username);
-      await this.verifyPassword(password, user.password);
-      delete user.password;
-      return user;
-    } catch (error) {
-      throw new HttpException('密码错误', HttpStatus.BAD_REQUEST);
+    const user = await this.userService.findOneByUserName(username);
+    if (!user) {
+      throw new HttpException('用户未注册或用户名错误', HttpStatus.BAD_REQUEST);
     }
+    await this.verifyPassword(password, user.password);
+    return user;
   }
 
   private async verifyPassword(
@@ -59,7 +83,7 @@ export class AuthService {
   ) {
     const isPasswordMatching = await compare(plainTextPassword, hashedPassword);
     if (!isPasswordMatching) {
-      throw new HttpException('密码错误', HttpStatus.BAD_REQUEST);
+      throw new HttpException('账号或密码错误', HttpStatus.BAD_REQUEST);
     }
   }
 }

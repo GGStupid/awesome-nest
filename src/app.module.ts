@@ -6,6 +6,8 @@ import { CommonModule } from './common/common.module';
 import { DatabaseModule } from './database/database.module';
 import { UploadModule } from './upload/upload.module';
 import * as Joi from '@hapi/joi';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 
 @Module({
   imports: [
@@ -16,8 +18,10 @@ import * as Joi from '@hapi/joi';
         POSTGRES_USER: Joi.string().required(),
         POSTGRES_PASSWORD: Joi.string().required(),
         POSTGRES_DB: Joi.string().required(),
-        JWT_SECRET: Joi.string().required(),
-        JWT_EXPIRATION_TIME: Joi.string().required(),
+        JWT_TOKEN_SECRET: Joi.string().required(),
+        JWT_TOKEN_EXPIRATION_SECRET: Joi.string().required(),
+        JWT_REFRESH_TOKEN_SECRET: Joi.string().required(),
+        JWT_REFRESH_TOKEN_EXPIRATION_TIME: Joi.string().required(),
         PORT: Joi.number(),
       }),
     }),
@@ -28,6 +32,11 @@ import * as Joi from '@hapi/joi';
     UploadModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
 export class AppModule { }
