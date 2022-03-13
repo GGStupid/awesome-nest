@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { CommonModule } from './common/common.module';
 import { DatabaseModule } from './database/database.module';
+import { UploadModule } from './upload/upload.module';
 import * as Joi from '@hapi/joi';
 
 @Module({
@@ -24,8 +25,9 @@ import * as Joi from '@hapi/joi';
     UserModule,
     AuthModule,
     CommonModule,
+    UploadModule,
   ],
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }
