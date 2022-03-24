@@ -1,3 +1,4 @@
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   Controller,
   Get,
@@ -11,31 +12,37 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
+@ApiTags("用户模块")
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
-  @Post('/register')
-  register(@Body() createUserDto: CreateUserDto) {
-    return this.userService.register(createUserDto);
+  @ApiOperation({ summary: '创建用户' })
+  @Post('/create')
+  create(@Body() createUserDto: CreateUserDto) {
+    return this.userService.create(createUserDto);
   }
 
-  @Post('/login')
-  login(@Body() createUserDto: UpdateUserDto) {
-    return this.userService.login(createUserDto);
+  @ApiOperation({ summary: '查询所有用户' })
+  @Get()
+  findAll() {
+    return this.userService.findAll();
   }
 
+  @ApiOperation({ summary: '查询某个用户' })
   @Get(':id')
   findOne(@Param('id') id: string) {
     console.log(id, typeof id);
     return this.userService.findOne(+id);
   }
 
+  @ApiOperation({ summary: '更新用户信息' })
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
   }
 
+  @ApiOperation({ summary: '删除用户' })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);

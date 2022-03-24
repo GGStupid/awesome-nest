@@ -1,3 +1,4 @@
+import { ApiTags } from '@nestjs/swagger';
 import {
   Body,
   ClassSerializerInterceptor,
@@ -20,6 +21,7 @@ import JwtRefreshGuard from './guards/jwt-refresh.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import RequestWithUser from './requestWithUser.interface';
 
+@ApiTags("注册登录授权模块")
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {

@@ -1,7 +1,10 @@
 import { UploadService } from './upload.service';
 import { Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 
+
+@ApiTags('文件上传模块')
 @Controller('upload')
 export class UploadController {
   constructor(private readonly uploadService: UploadService) { }

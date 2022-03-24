@@ -8,6 +8,7 @@ import { UploadModule } from './upload/upload.module';
 import * as Joi from '@hapi/joi';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
+import { RoleModule } from './role/role.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { HttpExceptionFilter } from './common/filter/http-exception.filter';
     AuthModule,
     CommonModule,
     UploadModule,
+    RoleModule,
   ],
   controllers: [],
   providers: [

@@ -40,7 +40,7 @@ export class UserService {
     throw new HttpException('用户不存在', HttpStatus.NOT_FOUND);
   }
 
-  async register(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto) {
     const user = await this.repo.create(createUserDto);
     return this.repo.save(user);
   }
